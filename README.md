@@ -1,5 +1,5 @@
 # Download
-If you want to download our app [Go to the releases page](https://github.com/DiscordProtector/main/Releases)
+If you want to download our app [Go to the releases page](https://github.com/DiscordProtector/main/releases)
 # What does this app do?
 This is a program written in multiple languages and it protect your discord client(s) (WILL NOT WORK ON WEB VERSIONS) from getting cookie logged aka token stealing. It modifies Discord to ensure all cookies are **Encrypted**.
 # What discord clients are supported?
