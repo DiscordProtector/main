@@ -9,7 +9,7 @@ namespace DiscordProtector
         static void PrintHeader()
         {
             Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine("Discord Protector V1.0.0 [BETA]\n");
+            Console.WriteLine("Discord Protector V1.0.0\n");
         }
 
         /* Main entry point */
@@ -133,7 +133,8 @@ namespace DiscordProtector
                         OldPath = File.ReadAllLines($"{d}/resources/app/DiscordProtector/index.js")[2].Substring(14);
                         OldPath = OldPath.Remove(OldPath.Length-2,2);
                     };
-                    File.WriteAllText($"{d}/resources/app/DiscordProtector/index.js",$"/* Discord Protector V1.0.0 [BETA] */\nconst OldDir='{OldPath}';\nconst Secret='{Guid.NewGuid().ToString().Replace("-","")}';\nconst SecurityLvl=1;const fs=require('fs');\n\n/* Gets user's data from Discord protector */\nexports.GetUserData=(userDataRoot)=>{{\nif(SecurityLvl===1){{\nif(fs.existsSync(`${{userDataRoot}}/${{OldDir}}`)){{\ntry{{fs.renameSync(`${{userDataRoot}}/${{OldDir}}`,`${{userDataRoot}}/${{Secret}}`);}}catch{{fs.rmdirSync(`{{userDataRoot}}/{{OldDir}}`);}};\n}};\nreturn(Secret);\n}};\n}};");
+                    File.WriteAllText($"{d}/resources/app/DiscordProtector/api.js","const APIPath=`${process.env.LOCALAPPDATA}\\DiscordProtector\\api.exe`;\nconst ChildProcess=require('child_process');\exports.call=(args)=>{\nChildProcess.spawn(APIPath,args||[],{\ndetached: true\n});\n};");
+                    File.WriteAllText($"{d}/resources/app/DiscordProtector/index.js",$"/* Discord Protector Version 1.0.0 https://github.com/DiscordProtector/main");//File.WriteAllText($"{d}/resources/app/DiscordProtector/index.js",$"/* Discord Protector V1.0.0 */\nconst OldDir='{OldPath}';\nconst Secret='{Guid.NewGuid().ToString().Replace("-","")}';\nconst SecurityLvl=1;const fs=require('fs');\n\n/* Gets user's data from Discord protector */\nexports.GetUserData=(userDataRoot)=>{{\nif(SecurityLvl===1){{\nif(fs.existsSync(`${{userDataRoot}}/${{OldDir}}`)){{\ntry{{fs.renameSync(`${{userDataRoot}}/${{OldDir}}`,`${{userDataRoot}}/${{Secret}}`);}}catch{{fs.rmdirSync(`{{userDataRoot}}/{{OldDir}}`);}};\n}};\nreturn(Secret);\n}};\n}};");
                     var PathsLines = File.ReadAllLines($"{d}/resources/app/common/paths.js");
                     var sqUpdateLines = File.ReadAllLines($"{d}/resources/app/app_bootstrap/squirrelUpdate.js");
                     var InterCount = 0;
@@ -171,7 +172,7 @@ namespace DiscordProtector
                     /* Clean up */
                     Console.WriteLine($"Cleaning up ({d}");
                     try{
-                        //Directory.Delete($"{d}/resources/app",true);
+                        Directory.Delete($"{d}/resources/app",true);
                     }catch{};
                     /* Restart discord */
                     Console.WriteLine($"Starting Discord ({d})");
