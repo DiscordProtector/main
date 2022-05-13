@@ -167,6 +167,8 @@ namespace DiscordProtector
                         p.Kill();
                     };
                     Console.WriteLine($"Packing asar ({d}/resources/app.asar)");
+                    /* Register changes with api */
+                    Process.Start($"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}/DiscordProtector/api.exe",$@"--registerinstallation ""{edition}""");
                     /* Re-pack */
                     Process.Start("node.exe",$@"pack.js ""{d}/resources/app"" ""{d}/resources/app.asar""").WaitForExit();
                     /* Clean up */
@@ -177,8 +179,6 @@ namespace DiscordProtector
                     /* Restart discord */
                     Console.WriteLine($"Starting Discord ({d})");
                     Process.Start($"{d}/{edition}.exe");
-                    Console.ReadLine();
-                    Console.Clear();
                 };
             };
         }
@@ -302,6 +302,7 @@ namespace DiscordProtector
                             {
                                 // install
                                 InstallToDiscord("discordptb");
+                                Break = true;
                             };
                             break;
                         case 3:
@@ -309,6 +310,7 @@ namespace DiscordProtector
                             {
                                 // install
                                 InstallToDiscord("discordcanary");
+                                Break = true;
                             };
                             break;
                         case 4:
@@ -316,6 +318,7 @@ namespace DiscordProtector
                             {
                                 // install
                                 InstallToDiscord("discorddevelopment");
+                                Break = true;
                             };
                             break;
                     };
