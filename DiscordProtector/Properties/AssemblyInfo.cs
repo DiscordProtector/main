@@ -5,13 +5,13 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("DiscordProtector")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Discord Protector")]
+[assembly: AssemblyDescription("Adds security to your Discord client(s)")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("DiscordProtector")]
+[assembly: AssemblyCompany("Discord Protector")]
+[assembly: AssemblyProduct("Discord Protector")]
 [assembly: AssemblyCopyright("Copyright ©  2022")]
-[assembly: AssemblyTrademark("")]
+[assembly: AssemblyTrademark("Discord Protector")]
 [assembly: AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible

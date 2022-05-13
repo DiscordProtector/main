@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Diagnostics;
 using System.IO;
 namespace DiscordProtector
@@ -15,6 +16,12 @@ namespace DiscordProtector
         /* Main entry point */
         static void Main(string[]args)
         {
+            if (!Directory.Exists($"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}/DiscordProtector") || Registry.CurrentUser.OpenSubKey("DiscordProtector") == null)
+            {
+                System.Windows.Forms.MessageBox.Show("Discord Protector is not installed correctly, Please run the setup again.","Discord Protector",System.Windows.Forms.MessageBoxButtons.OK,System.Windows.Forms.MessageBoxIcon.Error);
+                Environment.Exit(0);
+            };
+            Environment.CurrentDirectory = $"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}/DiscordProtector";
             Console.Title = "Discord Protector";
             while (true)
             {
@@ -133,8 +140,8 @@ namespace DiscordProtector
                         OldPath = File.ReadAllLines($"{d}/resources/app/DiscordProtector/index.js")[2].Substring(14);
                         OldPath = OldPath.Remove(OldPath.Length-2,2);
                     };
-                    File.WriteAllText($"{d}/resources/app/DiscordProtector/api.js","const APIPath=`${process.env.LOCALAPPDATA}\\DiscordProtector\\api.exe`;\nconst ChildProcess=require('child_process');\exports.call=(args)=>{\nreturn(ChildProcess.spawnSync(APIPath,args||[],{\ndetached: true,windowsHide: true\n}).stdout);\n};");
-                    File.WriteAllText($"{d}/resources/app/DiscordProtector/index.js",$"/* Discord Protector Version 1.0.0 https://github.com/DiscordProtector/main */\n\n/* Variables */\nconst API=require('./api').call;\nconst Edition="{edition}"\n\n/* Return results from API call */\nreturn(API(['--launch',`"${{Edition}}"`]));");
+                    File.WriteAllText($"{d}/resources/app/DiscordProtector/api.js","const APIPath=`${process.env.LOCALAPPDATA}\\DiscordProtector\\api.exe`;\nconst ChildProcess=require('child_process');\nexports.call=(args)=>{\nreturn(ChildProcess.spawnSync(APIPath,args||[],{\ndetached: true,windowsHide: true\n}).stdout);\n};");
+                    File.WriteAllText($"{d}/resources/app/DiscordProtector/index.js",$"/* Discord Protector Version 1.0.0 https://github.com/DiscordProtector/main */\n\n/* Variables */\nconst API=require('./api').call;\nconst Edition=\"{edition}\"\n\n/* Return results from API call */\nreturn(API(['--launch',`\"${{Edition}}\"`]));");
                     var PathsLines = File.ReadAllLines($"{d}/resources/app/common/paths.js");
                     var sqUpdateLines = File.ReadAllLines($"{d}/resources/app/app_bootstrap/squirrelUpdate.js");
                     var InterCount = 0;
