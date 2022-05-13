@@ -16,9 +16,28 @@ namespace DiscordProtector
         /* Main entry point */
         static void Main(string[]args)
         {
-            if (!Directory.Exists($"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}/DiscordProtector") || Registry.CurrentUser.OpenSubKey("DiscordProtector") == null)
+            if (!Directory.Exists($"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}/DiscordProtector"))
             {
                 System.Windows.Forms.MessageBox.Show("Discord Protector is not installed correctly, Please run the setup again.","Discord Protector",System.Windows.Forms.MessageBoxButtons.OK,System.Windows.Forms.MessageBoxIcon.Error);
+                Environment.Exit(0);
+            };
+            try
+            {
+                var Installed = false;
+                if (Registry.CurrentUser.OpenSubKey("DiscordProtector") != null)
+                {
+                    if (Registry.CurrentUser.OpenSubKey("DiscordProtector").GetValue("Installed") != null)
+                    {
+                        Installed = true;
+                    };
+                };
+                if (!Installed)
+                {
+                    System.Windows.Forms.MessageBox.Show("Discord Protector is not installed correctly, Please run the setup again.", "Discord Protector", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
+                    Environment.Exit(0);
+                };
+            }catch{
+                System.Windows.Forms.MessageBox.Show("Discord Protector is not installed correctly, Please run the setup again.", "Discord Protector", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
                 Environment.Exit(0);
             };
             Environment.CurrentDirectory = $"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}/DiscordProtector";
