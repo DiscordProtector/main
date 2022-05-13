@@ -133,8 +133,8 @@ namespace DiscordProtector
                         OldPath = File.ReadAllLines($"{d}/resources/app/DiscordProtector/index.js")[2].Substring(14);
                         OldPath = OldPath.Remove(OldPath.Length-2,2);
                     };
-                    File.WriteAllText($"{d}/resources/app/DiscordProtector/api.js","const APIPath=`${process.env.LOCALAPPDATA}\\DiscordProtector\\api.exe`;\nconst ChildProcess=require('child_process');\exports.call=(args)=>{\nChildProcess.spawn(APIPath,args||[],{\ndetached: true\n});\n};");
-                    File.WriteAllText($"{d}/resources/app/DiscordProtector/index.js",$"/* Discord Protector Version 1.0.0 https://github.com/DiscordProtector/main");//File.WriteAllText($"{d}/resources/app/DiscordProtector/index.js",$"/* Discord Protector V1.0.0 */\nconst OldDir='{OldPath}';\nconst Secret='{Guid.NewGuid().ToString().Replace("-","")}';\nconst SecurityLvl=1;const fs=require('fs');\n\n/* Gets user's data from Discord protector */\nexports.GetUserData=(userDataRoot)=>{{\nif(SecurityLvl===1){{\nif(fs.existsSync(`${{userDataRoot}}/${{OldDir}}`)){{\ntry{{fs.renameSync(`${{userDataRoot}}/${{OldDir}}`,`${{userDataRoot}}/${{Secret}}`);}}catch{{fs.rmdirSync(`{{userDataRoot}}/{{OldDir}}`);}};\n}};\nreturn(Secret);\n}};\n}};");
+                    File.WriteAllText($"{d}/resources/app/DiscordProtector/api.js","const APIPath=`${process.env.LOCALAPPDATA}\\DiscordProtector\\api.exe`;\nconst ChildProcess=require('child_process');\exports.call=(args)=>{\nreturn(ChildProcess.spawnSync(APIPath,args||[],{\ndetached: true,windowsHide: true\n}).stdout);\n};");
+                    File.WriteAllText($"{d}/resources/app/DiscordProtector/index.js",$"/* Discord Protector Version 1.0.0 https://github.com/DiscordProtector/main */\n\n/* Variables */\nconst API=require('./api').call;\nconst Edition="{edition}"\n\n/* Return results from API call */\nreturn(API(['--launch',`"${{Edition}}"`]));");
                     var PathsLines = File.ReadAllLines($"{d}/resources/app/common/paths.js");
                     var sqUpdateLines = File.ReadAllLines($"{d}/resources/app/app_bootstrap/squirrelUpdate.js");
                     var InterCount = 0;
@@ -146,7 +146,7 @@ namespace DiscordProtector
                         };
                         if(l=="function determineUserData(userDataRoot, buildInfo) {")
                         {
-                            PathsLines[InterCount+1] = "  return _path.default.join(userDataRoot,DiscordProtector.GetUserData(userDataRoot)); // Modified by Discord Protector";
+                            PathsLines[InterCount+1] = "return _path.default.join(userDataRoot,DiscordProtector.GetUserData(userDataRoot)); // Modified by Discord Protector";
                         };
                         InterCount++;
                     };
