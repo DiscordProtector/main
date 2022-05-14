@@ -2,6 +2,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Threading;
 namespace DiscordProtector
 {
     internal class Program
@@ -144,45 +145,46 @@ namespace DiscordProtector
                 string d = a.Replace("\\", "/");
                 if (File.Exists($"{d}/resources/app.asar"))
                 {
+                    Console.WriteLine($"Creating backup of app.asar");
+                    File.Copy($"{d}/resources/app.asar",$"{d}/resources/app.asar.backup",true);
                     Console.WriteLine($"Extracting asar ({d}/resources/app.asar)");
                     /* Extract asar */
-                    Process.Start("node.exe",$@"unpack.js ""{d}/resources/app.asar"" ""{d}/resources/app""").WaitForExit();
+                    Process.Start("node.exe",$@"unpack.js ""{d}/resources/app.asar"" ""{d}/resources/appasar""").WaitForExit();
                     /* Write DiscordProtector stuff */
                     Console.WriteLine($"Adding security to asar ({d}/resources/app.asar)");
-                    if (!Directory.Exists($"{d}/resources/app/DiscordProtector"))
+                    if (!Directory.Exists($"{d}/resources/appasar/DiscordProtector"))
                     {
-                        Directory.CreateDirectory($"{d}/resources/app/DiscordProtector");
+                        Directory.CreateDirectory($"{d}/resources/appasar/DiscordProtector");
                     };
-                    var OldPath=edition;
-                    if (File.Exists($"{d}/resources/app/DiscordProtector/index.js"))
-                    {
-                        OldPath = File.ReadAllLines($"{d}/resources/app/DiscordProtector/index.js")[2].Substring(14);
-                        OldPath = OldPath.Remove(OldPath.Length-2,2);
-                    };
-                    File.WriteAllText($"{d}/resources/app/DiscordProtector/api.js","const APIPath=`${process.env.LOCALAPPDATA}\\DiscordProtector\\api.exe`;\nconst ChildProcess=require('child_process');\nexports.call=(args)=>{\nreturn(ChildProcess.spawnSync(APIPath,args||[],{\ndetached: true,windowsHide: true\n}).stdout);\n};");
-                    File.WriteAllText($"{d}/resources/app/DiscordProtector/index.js",$"/* Discord Protector Version 1.0.0 https://github.com/DiscordProtector/main */\n\n/* Variables */\nconst API=require('./api').call;\nconst Edition=\"{edition}\"\n\n/* Return results from API call */\nreturn(API(['--launch',`\"${{Edition}}\"`]));");
-                    var PathsLines = File.ReadAllLines($"{d}/resources/app/common/paths.js");
-                    var sqUpdateLines = File.ReadAllLines($"{d}/resources/app/app_bootstrap/squirrelUpdate.js");
+                    File.WriteAllText($"{d}/resources/appasar/DiscordProtector/api.js","/* Discord Protector Version 1.0.0 https://github.com/DiscordProtector/main */\n\n/* Variables */\nconst APIPath=`${process.env.LOCALAPPDATA}\\\\DiscordProtector\\\\api.exe`;\nconst ChildProcess=require('child_process');\n\n/* Make api call */\nexports.call=(args,returnstring)=>{\nlet STDOUT=ChildProcess.spawnSync(APIPath,args||[],{detached: true,windowsHide: true}).stdout.toString();\nif(returnstring){\nreturn(STDOUT);\n}else{\nSTDOUT=STDOUT.split('\\n');\nSTDOUT.pop();\nreturn(STDOUT);\n};\n};");
+                    File.WriteAllText($"{d}/resources/appasar/DiscordProtector/index.js",$"/* Discord Protector Version 1.0.0 https://github.com/DiscordProtector/main */\n\n/* Variables */\nconst API=require('./api').call;\nconst versionpath=\"{d}\"\nconst Edition=\"{edition}\"\n\n/* Get user data path */\nexports.GetUserData=()=>{{\nreturn(API(['--getuserdata',`${{versionpath}}`,`${{Edition}}`])[0].trim());\n}};");
+                    var PathsLines = File.ReadAllLines($"{d}/resources/appasar/common/paths.js");
+                    var sqUpdateLines = File.ReadAllLines($"{d}/resources/appasar/app_bootstrap/squirrelUpdate.js");
                     var InterCount = 0;
                     foreach(var l in PathsLines)
                     {
                         if(l=="let installPath = null;")
                         {
-                            PathsLines[InterCount] = "let installPath=null;\nlet DiscordProtector=require('../DiscordProtector/index.js');";
+                            PathsLines[InterCount] = "let installPath;\nlet DiscordProtector=require('../DiscordProtector/index.js');";
                         };
                         if(l=="function determineUserData(userDataRoot, buildInfo) {")
                         {
-                            PathsLines[InterCount+1] = "return _path.default.join(userDataRoot,DiscordProtector.GetUserData(userDataRoot)); // Modified by Discord Protector";
+                            PathsLines[InterCount+1] = "  return(_path.default.join(userDataRoot,DiscordProtector.GetUserData()));";
+                        };
+                        if(l=="  return app.getPath('appData');")
+                        {
+                            PathsLines[InterCount] = "  return(`${app.getPath('home')}/AppData/LocalLow/DiscordProtector/clientdata`);";
                         };
                         InterCount++;
                     };
-                    File.WriteAllLines($"{d}/resources/app/common/paths.js",PathsLines);
+                    PathsLines[0] = $"/* Discord Protector Version 1.0.0 https://github.com/DiscordProtector/main */\n\n{PathsLines[0]}";
+                    File.WriteAllLines($"{d}/resources/appasar/common/paths.js",PathsLines);
                     InterCount = 0;
                     foreach (var l in sqUpdateLines)
                     {
                         if(l=="function restart(app, newVersion) {")
                         {
-                            PathsLines[InterCount] = "function restart(app,newVersion){\napp.once('will-quit',()=>{\nconst execPath=_path.default.resolve(rootFolder,`app-${newVersion}`).replace(/\\/g,'/');\n_child_process.default.spawn(`${process.env.LOCALAPPDATA}\\DiscordProtector\\api.exe`,['--update',`\"${execPath}\"`,`\"${exeName}\"`],{\ndetached: true\n});\n});\napp.quit();\n};";
+                            PathsLines[InterCount] = $"function restart(app,newVersion){{\napp.once('will-quit',()=>{{\nconst execPath=_path.default.resolve(rootFolder,`app-${{newVersion}}`).replace(/\\/g,'/');\n_child_process.default.spawn(`${{process.env.LOCALAPPDATA}}\\DiscordProtector\\api.exe`,['--discordupdated',`\"${{execPath}}\"`,\"{d}\",\"{edition}\"`],{{\ndetached: true\n}});\n}});\napp.quit();\n}};";
                         };
                     };
                     /* Kill discord */
@@ -192,19 +194,27 @@ namespace DiscordProtector
                         Console.WriteLine($"Killing Discord PID: {p.Id}");
                         p.Kill();
                     };
+                    /* Wait for discord to fully close */
+                    Thread.Sleep(5000);
+                    Console.WriteLine("Killed Discord");
                     Console.WriteLine($"Packing asar ({d}/resources/app.asar)");
                     /* Register changes with api */
-                    Process.Start($"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}/DiscordProtector/api.exe",$@"--registerinstallation ""{edition}""");
+                    Console.WriteLine("Registering installation");
+                    Process.Start($"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}/DiscordProtector/api.exe",$@"--registerinstallation ""{d}"" ""{edition}""").WaitForExit();;
                     /* Re-pack */
-                    Process.Start("node.exe",$@"pack.js ""{d}/resources/app"" ""{d}/resources/app.asar""").WaitForExit();
+                    Process.Start("node.exe",$@"pack.js ""{d}/resources/appasar"" ""{d}/resources/app.asar""").WaitForExit();
                     /* Clean up */
                     Console.WriteLine($"Cleaning up ({d}");
                     try{
-                        Directory.Delete($"{d}/resources/app",true);
+                        Directory.Delete($"{d}/resources/appasar",true);
                     }catch{};
                     /* Restart discord */
                     Console.WriteLine($"Starting Discord ({d})");
-                    Process.Start($"{d}/{edition}.exe");
+                    Process.Start("cmd.exe",$"/C \"start {d}/{edition}.exe\"");
+                    /* Success */
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.WriteLine($"Discord Protector successfully installed to {d}");
+                    Thread.Sleep(5000);
                 };
             };
         }
@@ -228,7 +238,7 @@ namespace DiscordProtector
             Console.Clear();
             PrintHeader();
             Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine("Which version of Discord would you like to protect?\n\nUse the arrow keys to change your choice and press enter to confirm your choice\n");
+            Console.WriteLine("Which version of Discord would you like to protect?\n\nUse the arrow keys to change your choice and press enter to confirm your choice or press ESC to go back\n");
             var CurrentChoice = 1;
             Console.ForegroundColor = ConsoleColor.Green;
             if (Discord)
@@ -307,6 +317,12 @@ namespace DiscordProtector
                 if ((Key == ConsoleKey.DownArrow) && (CurrentChoice < 4))
                 {
                     CurrentChoice++;
+                };
+
+                /* Check if return */
+                if(Key == ConsoleKey.Escape)
+                {
+                    break;
                 };
 
                 /* Check if cofirm */

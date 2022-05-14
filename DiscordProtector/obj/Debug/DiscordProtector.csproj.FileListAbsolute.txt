@@ -1,8 +1,0 @@
-C:\Users\Admin\Documents\DiscordProtector\DiscordProtector\bin\Debug\DiscordProtector.exe.config
-C:\Users\Admin\Documents\DiscordProtector\DiscordProtector\bin\Debug\DiscordProtector.exe
-C:\Users\Admin\Documents\DiscordProtector\DiscordProtector\bin\Debug\DiscordProtector.pdb
-C:\Users\Admin\Documents\DiscordProtector\DiscordProtector\obj\Debug\DiscordProtector.csproj.AssemblyReference.cache
-C:\Users\Admin\Documents\DiscordProtector\DiscordProtector\obj\Debug\DiscordProtector.csproj.SuggestedBindingRedirects.cache
-C:\Users\Admin\Documents\DiscordProtector\DiscordProtector\obj\Debug\DiscordProtector.csproj.CoreCompileInputs.cache
-C:\Users\Admin\Documents\DiscordProtector\DiscordProtector\obj\Debug\DiscordProtector.exe
-C:\Users\Admin\Documents\DiscordProtector\DiscordProtector\obj\Debug\DiscordProtector.pdb
