@@ -223,7 +223,7 @@ namespace DiscordProtector
                         InstallDir = a;
                     };
                 };
-                string d = InstallDir.Replace("\\", "/"); Console.WriteLine(d); Thread.Sleep(1000000);
+                string d = InstallDir.Replace("\\", "/");
                 if (File.Exists($"{d}/resources/app.asar"))
                 {
                     Console.WriteLine($"Creating backup of app.asar");
