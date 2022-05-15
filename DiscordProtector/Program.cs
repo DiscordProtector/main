@@ -198,6 +198,7 @@ namespace DiscordProtector
             Process.Start($"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}/DiscordProtector/api.exe", $@"--uninstallinstall ""{d}"" ""{edition}""").WaitForExit();
             /* Remove asar */
             File.Delete($"{d}/resources/app.asar");
+            File.Delete($"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}/${edition}/protected.discordprotector");
             /* Copy original */
             File.Copy($"{d}/resources/app.asar.original",$"{d}/resources/app.asar");
             /* Restart discord */
@@ -246,7 +247,7 @@ namespace DiscordProtector
                     {
                         Directory.CreateDirectory($"{d}/resources/appasar/DiscordProtector");
                     };
-                    File.WriteAllText($"{d}/protected.discordprotector","");
+                    File.WriteAllText($"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}/${edition}/protected.discordprotector","");
                     File.WriteAllText($"{d}/resources/appasar/DiscordProtector/api.js","/* Discord Protector Version 1.0.2 https://github.com/DiscordProtector/main */\n\n/* Variables */\nconst APIPath=`${process.env.LOCALAPPDATA}\\\\DiscordProtector\\\\api.exe`;\nconst ChildProcess=require('child_process');\n\n/* Make api call */\nexports.call=(args,returnstring)=>{\nlet STDOUT=ChildProcess.spawnSync(APIPath,args||[],{detached: true,windowsHide: true}).stdout.toString();\nif(returnstring){\nreturn(STDOUT);\n}else{\nSTDOUT=STDOUT.split('\\n');\nSTDOUT.pop();\nreturn(STDOUT);\n};\n};");
                     File.WriteAllText($"{d}/resources/appasar/DiscordProtector/index.js",$"/* Discord Protector Version 1.0.2 https://github.com/DiscordProtector/main */\n\n/* Variables */\nconst API=require('./api').call;\nconst versionpath=\"{d}\"\nconst Edition=\"{edition}\"\nlet DataDir;\n\n/* Get user data path */\nexports.GetUserData=()=>{{\nlet ApiData=API(['--getuserdata',`${{versionpath}}`,`${{Edition}}`])[0];if(ApiData){{\nApiData=ApiData.trim();DataDir=ApiData;return(DataDir);\n}}else{{\nthrow new Error(\"Something went wrong while retrieving data.\");\n}};\n}};");
                     var PathsLines = File.ReadAllLines($"{d}/resources/appasar/common/paths.js");
