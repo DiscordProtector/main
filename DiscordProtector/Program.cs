@@ -171,7 +171,10 @@ namespace DiscordProtector
             var InstallDir = "";
             foreach (var a in Directory.EnumerateDirectories($"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}/{edition}"))
             {
-                InstallDir = a;
+                if (a.Contains("\\app-"))
+                {
+                    InstallDir = a;
+                };
             };
             string d = InstallDir.Replace("\\", "/");
             if (File.Exists($"{d}/resources/app.asar"))
@@ -215,9 +218,12 @@ namespace DiscordProtector
             var InstallDir = "";
                 foreach (var a in Directory.EnumerateDirectories($"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}/{edition}"))
                 {
-                    InstallDir = a;
+                    if (a.Contains("\\app-"))
+                    {
+                        InstallDir = a;
+                    };
                 };
-                string d = InstallDir.Replace("\\", "/");
+                string d = InstallDir.Replace("\\", "/"); Console.WriteLine(d); Thread.Sleep(1000000);
                 if (File.Exists($"{d}/resources/app.asar"))
                 {
                     Console.WriteLine($"Creating backup of app.asar");
