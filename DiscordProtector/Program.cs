@@ -7,12 +7,13 @@ namespace DiscordProtector
 {
     internal class Program
     {
+        static string DPDataPath = $"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}/DiscordProtector";
         /* Print header */
         static void PrintHeader()
         {
             Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine("Discord Protector v1.0.2 Created by Harriet, xynny & Siekiera\n");
-            Console.WriteLine("\nDiscord Protector is no longer maintained (You may still contribute on Github) it may be re-maintained later\n")
+            Console.WriteLine("Discord Protector v1.0.3 by Harriet, xynny & Siekiera\n");
+            Console.WriteLine("\nDiscord Protector is no longer maintained (You may still contribute on Github)\n");
             Console.ForegroundColor = ConsoleColor.White;
         }
 
@@ -373,7 +374,7 @@ namespace DiscordProtector
                     {
                         Directory.CreateDirectory($"{DPDataPath}/hashes");
                     };
-                    /* Start api and register new install
+                    /* Start api and register new install */
                     Process.Start($"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}/DiscordProtector/api.exe",$@"--registerinstallation ""{d}"" ""{edition}""").WaitForExit();
                     /* Re-pack */
                     var PPSI = new ProcessStartInfo();
