@@ -11,7 +11,8 @@ namespace DiscordProtector
         static void PrintHeader()
         {
             Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine("Discord Protector v1.0.2 Created by Harriet#2002 & Siekiera#9919\n");
+            Console.WriteLine("Discord Protector v1.0.2 Created by Harriet, xynny & Siekiera\n");
+            Console.WriteLine("\nDiscord Protector is no longer maintained (You may still contribute on Github) it may be re-maintained later\n")
             Console.ForegroundColor = ConsoleColor.White;
         }
 
@@ -351,6 +352,28 @@ namespace DiscordProtector
                     Console.WriteLine($"Packing asar ({d}/resources/app.asar)");
                     /* Register changes with api */
                     Console.WriteLine("Registering installation");
+                    /* Create dirs if missing */
+                    if (!Directory.Exists(DPDataPath))
+                    {
+                        Directory.CreateDirectory(DPDataPath);
+                    };
+                    if (!Directory.Exists($"{DPDataPath}/versions"))
+                    {
+                        Directory.CreateDirectory($"{DPDataPath}/versions");
+                    };
+                    if (!Directory.Exists($"{DPDataPath}/protections"))
+                    {
+                        Directory.CreateDirectory($"{DPDataPath}/protections");
+                    };
+                    if (!Directory.Exists($"{DPDataPath}/clientdata"))
+                    {
+                        Directory.CreateDirectory($"{DPDataPath}/clientdata");
+                    };
+                    if (!Directory.Exists($"{DPDataPath}/hashes"))
+                    {
+                        Directory.CreateDirectory($"{DPDataPath}/hashes");
+                    };
+                    /* Start api and register new install
                     Process.Start($"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}/DiscordProtector/api.exe",$@"--registerinstallation ""{d}"" ""{edition}""").WaitForExit();
                     /* Re-pack */
                     var PPSI = new ProcessStartInfo();
@@ -812,7 +835,7 @@ namespace DiscordProtector
             Console.Clear();
             PrintHeader();
             Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine("Which version of Discord would you like to protect?\n\nUse the arrow keys to change your choice and press enter to confirm your choice or press ESC to go back\n");
+            Console.WriteLine("Which version of Discord would you like to unprotect?\n\nUse the arrow keys to change your choice and press enter to confirm your choice or press ESC to go back\n");
             var CurrentChoice = 1;
             Console.ForegroundColor = ConsoleColor.Green;
             if (Discord)
